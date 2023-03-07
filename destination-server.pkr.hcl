@@ -106,10 +106,5 @@ build {
   post-processor "manifest" {
     output = local.manifest
     strip_path = false
-    custom_data = {
-      azurerm_shared_image_version = {
-        name = local.version_name
-      }
-    }
   }
 }
