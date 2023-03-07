@@ -12,10 +12,16 @@ variable "client_secret" {
   type = string
 }
 
-variable "artifact_resource_group_name" {
+variable "resource_group_name" {
   type        = string
   description = "(optional) resource group name to store infra testing resource"
   default     = "test-artifact"
+}
+
+variable "gallery_name" {
+  type        = string
+  description = "(optional) gallery name"
+  default     = "gallery"
 }
 
 variable "location" {

@@ -33,9 +33,24 @@ variable "artifact_resource_group_name" {
   type = string
   default = "packer-artifact"
 }
+variable "version_name" {
+  type = string
+  default = ""
+}
+variable "delimiter" {
+  type = string
+  default = "-"
+}
+variable "manifest" {
+  type        = string
+  description = "(optional) manifest file for built image"
+  default     = ""
+}
 
 locals {
-  managed_image_name = "${var.name}-${formatdate("YYYYMMDDHHmmss", timestamp())}"
+  version_name = var.version_name != "" ? var.version_name : formatdate("YYYYMMDDHHmmss", timestamp())
+  manifest = var.manifest != "" ? var.manifest : "${var.name}.manifest.json"
+  managed_image_name = "${var.name}${var.delimiter}${local.version_name}"
 }
 
 source "azure-arm" "test_server" {
@@ -86,5 +101,15 @@ build {
       "sudo cp /tmp/default.conf /etc/nginx/conf.d/",
       "sudo rm /etc/nginx/sites-enabled/default"
     ]
+  }
+
+  post-processor "manifest" {
+    output = local.manifest
+    strip_path = false
+    custom_data = {
+      azurerm_shared_image_version = {
+        name = local.version_name
+      }
+    }
   }
 }
